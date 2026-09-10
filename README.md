@@ -561,6 +561,124 @@ Test:
 
 Do not implement documents, emails, meetings, or screen analysis yet.
 
+
+Implement Phase 6 only.
+
+GOAL
+
+Allow users to upload company documents and add them to the RAG knowledge base.
+
+Support initially:
+
+- PDF
+- DOCX
+- TXT
+- PPTX
+- XLSX
+- CSV
+- PNG
+- JPG
+- JPEG
+
+PIPELINE
+
+Upload
+↓
+Validate
+↓
+Store
+↓
+Extract content
+↓
+OCR when required
+↓
+Chunk text
+↓
+Generate embeddings using company LLM
+↓
+Store chunks + vectors in PostgreSQL
+
+DATABASE
+
+Create:
+
+documents
+document_chunks
+
+Document fields should include:
+
+- id
+- filename
+- mime_type
+- size
+- hash
+- owner
+- status
+- created_at
+- updated_at
+
+Document chunk:
+
+- id
+- document_id
+- chunk_index
+- content
+- page_number if available
+- embedding
+- metadata
+
+SECURITY
+
+Validate:
+
+- file type
+- MIME type
+- extension
+- file size
+
+Do not blindly trust the filename extension.
+
+Do not execute uploaded files.
+
+API
+
+Implement:
+
+POST /api/v1/files/upload
+GET /api/v1/files
+GET /api/v1/files/{id}
+DELETE /api/v1/files/{id}
+
+Processing can initially use FastAPI background tasks.
+
+Design it so it can later move to a dedicated worker.
+
+RAG
+
+Include document chunks in semantic retrieval.
+
+Return document sources where applicable.
+
+Example:
+
+Source:
+VPN_Troubleshooting.pdf
+Page: 12
+
+TESTING
+
+Test:
+
+- supported file
+- unsupported file
+- oversized file
+- extraction failure
+- chunking
+- embedding
+- retrieval
+- deletion
+
+
 Implement Phase 7 only.
 
 GOAL
